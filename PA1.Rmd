@@ -12,9 +12,9 @@ output:
 
 The activity data is loaded from a CSV-formatted file: 'activity.csv', with the columns:
 
-* steps
-* date
-* interval
+* steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+* date: The date on which the measurement was taken in YYYY-MM-DD format
+* interval: Identifier for the 5-minute interval in which measurement was taken
 
 Read the data, and change the date column to POSIXct date form. Make use of the lubridate and dplyr libraries in all the following.
 
@@ -32,8 +32,7 @@ To calculate the mean and median number of steps per day, we group the activity 
 ```{r steps_per_day}
 by_day <- group_by(activity,date)
 steps <- summarize(by_day,sum.steps=sum(steps))
-#plot(steps,
-#     main='Steps per Day',xlab='Date (2012)',ylab='Number of Steps')
+
 hist(steps$sum.steps,breaks=11,
      main='Distribution of Steps per Day',xlab='Steps per Day')
 ```
@@ -52,6 +51,28 @@ median(steps$sum,na.rm=T)
 
 ## What is the average daily activity pattern?
 
+To calculate the average pattern of steps per 5-minute interval, group the data by the interval column and then summarize with the mean function (and remove NA values). Convert the interval number to a time of day, because the interval value has jumps at 55,100; 155,200; etc ...
+
+```{r mean_daily}
+by_int <- group_by(activity,interval)
+steps <- summarize(by_int,mean=mean(steps,na.rm=T))
+
+tod <- floor(steps$interval/100) + (steps$interval %% 100) / 60.0
+plot(tod,steps$mean,type='l',
+     axes=FALSE,
+     main='Average Number of Steps per Interval',
+     xlab='Time',
+     ylab='Average Number of Steps'
+     )
+axis(1,at=0:24)
+axis(2)
+```
+
+```{r}
+maxint <- steps$interval[steps$mean==max(steps$mean)]
+```
+
+The maximum number of average steps taken occurs at interval `r maxint`.
 
 
 ## Imputing missing values
