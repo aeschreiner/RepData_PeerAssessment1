@@ -5,15 +5,20 @@ output:
   html_document:
     keep_md: true
 ---
-# Peer Assessment 1
+
+# Reproducbile Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 
-```{r include=FALSE}
-require(lubridate)
-require(dplyr)
-```
-```{r load_date}
+The activity data is loaded from a CSV-formatted file: 'activity.csv', with the columns:
+
+* steps
+* date
+* interval
+
+Read the data, and change the date column to POSIXct date form. Make use of the lubridate and dplyr libraries in all the following.
+
+```{r load_date,message=FALSE}
 require(lubridate)
 require(dplyr)
 activity <- read.csv('activity.csv')
@@ -22,12 +27,27 @@ activity$date <- ymd(activity$date)
 
 ## What is mean total number of steps taken per day?
 
+To calculate the mean and median number of steps per day, we group the activity data by date, and then summarize the grouped data with the sum function.
+
 ```{r steps_per_day}
 by_day <- group_by(activity,date)
-steps <- summarize(by_day,sum(steps))
-colnames(steps) <- c('date','sum.steps')
-plot(steps,
-     main='Steps per Day',xlab='Date (2012)',ylab='Number of Steps')
+steps <- summarize(by_day,sum.steps=sum(steps))
+#plot(steps,
+#     main='Steps per Day',xlab='Date (2012)',ylab='Number of Steps')
+hist(steps$sum.steps,breaks=11,
+     main='Distribution of Steps per Day',xlab='Steps per Day')
+```
+
+Compute the mean number of steps per day,
+
+```{r}
+mean(steps$sum,na.rm=T)
+```
+
+and the median number of steps per day.
+
+```{r}
+median(steps$sum,na.rm=T)
 ```
 
 ## What is the average daily activity pattern?
