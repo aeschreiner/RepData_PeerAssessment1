@@ -8,6 +8,8 @@ output:
 
 # Reproducible Research: Peer Assessment 1
 
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
 ## Loading and preprocessing the data
 
 The activity data is loaded from a CSV-formatted file: 'activity.csv', with the columns:
@@ -48,7 +50,8 @@ Compute the mean number of steps per day,
 
 
 ```r
-mean(stepsd$sum,na.rm=T)
+mean1 <- mean(stepsd$sum,na.rm=T)
+mean1
 ```
 
 ```
@@ -59,7 +62,8 @@ and the median number of steps per day.
 
 
 ```r
-median(stepsd$sum,na.rm=T)
+median1 <- median(stepsd$sum,na.rm=T)
+median1
 ```
 
 ```
@@ -68,7 +72,7 @@ median(stepsd$sum,na.rm=T)
 
 ## What is the average daily activity pattern?
 
-To calculate the average pattern of steps per 5-minute interval, group the data by the interval column and then summarize with the mean function (and remove NA values). The plot's x-axis is interval but more properly, the interval should be comverted to a continuouos time of day, because the interval value has jumps at 55,100; 155,200; etc ...
+To calculate the average pattern of steps per 5-minute interval, group the data by the interval column and then summarize with the mean function (and remove NA values). The plot's x-axis is interval number but more properly, the interval should be converted to a continuous time of day, because the interval value has jumps at 55,100; 155,200; etc ...; this can be seen if a point plot is made rather than a line.
 
 
 ```r
@@ -133,7 +137,8 @@ Compute the mean number of steps per day,
 
 
 ```r
-mean(stepsd2$sum)
+mean2 <- mean(stepsd2$sum)
+mean2
 ```
 
 ```
@@ -144,19 +149,20 @@ and the median number of steps per day.
 
 
 ```r
-median(stepsd2$sum)
+median2 <- median(stepsd2$sum)
+median2
 ```
 
 ```
 ## [1] 10641
 ```
 
-The computed mean and median values of the daily number of steps changes when the missing values of the original date are replaced, by the mean valued per the corresponding interval.
+The computed mean and median values of the daily number of steps changes compared to when the missing values of the original data are replaced, by the mean valued per the corresponding interval. In the original date, the mean and median are 10766.2 and 10765, compared to 10749.8 and 10641 respectively,  when computed from the data with inputed values.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Modify the dataset with filled-in values with a new column evaluating either 'weekday' or 'weekend' depending on the day of the week. Plot the mean per interval, comparing weekday vs. weekend.
+Modify the dataset with filled-in values with a new column evaluating to either 'weekday' or 'weekend' depending on the day of the week. Plot the mean per interval, comparing weekday vs. weekend.
 
 
 ```r
@@ -176,3 +182,5 @@ print(g)
 ```
 
 ![plot of chunk weekday](figure/weekday-1.png) 
+
+On weekdays, there is more activity in the morning between 0500 and 1000 hours, and slightly less in the early afternoon, compared to weekend days.
