@@ -6,7 +6,7 @@ output:
     keep_md: true
 ---
 
-# Reproducbile Research: Peer Assessment 1
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 
@@ -16,15 +16,13 @@ The activity data is loaded from a CSV-formatted file: 'activity.csv', with the 
 * date: The date on which the measurement was taken in YYYY-MM-DD format
 * interval: Identifier for the 5-minute interval in which measurement was taken
 
-Read the data, and change the date column to POSIXct date form. Make use of the lubridate and dplyr libraries in all the following.
+Read the data. Make use of the dplyr and ggplot2 libraries in all the following.
 
 ```{r load_date,message=FALSE}
-require(lubridate)
 require(dplyr)
 require(ggplot2)
 
 activity <- read.csv('activity.csv')
-activity$date <- ymd(activity$date)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -34,8 +32,12 @@ To calculate the mean and median number of steps per day, we group the activity 
 ```{r steps_per_day}
 stepsd <- activity %>% group_by(date) %>% summarize(sum=sum(steps))
 
-hist(stepsd$sum,breaks=11,
-     main='Distribution of Steps per Day',xlab='Steps per Day')
+g <- ggplot(stepsd,aes(sum)) +
+    geom_histogram(binwidth=1000,color='black',fill='blue') +
+    theme_bw() +
+    labs(title='Distribution of Steps per Day') +
+    labs(x='Steps per Day')
+print(g)
 ```
 
 Compute the mean number of steps per day,
@@ -52,20 +54,18 @@ median(stepsd$sum,na.rm=T)
 
 ## What is the average daily activity pattern?
 
-To calculate the average pattern of steps per 5-minute interval, group the data by the interval column and then summarize with the mean function (and remove NA values). For plotting purposes, onvert the interval number to a time of day, because the interval value has jumps at 55,100; 155,200; etc ...
+To calculate the average pattern of steps per 5-minute interval, group the data by the interval column and then summarize with the mean function (and remove NA values). The plot's x-axis is interval but more properly, the interval should be comverted to a continuouos time of day, because the interval value has jumps at 55,100; 155,200; etc ...
 
 ```{r mean_daily}
 stepsi <- activity %>% group_by(interval) %>% summarize(mean=mean(steps,na.rm=TRUE))
 
-tod <- floor(stepsi$interval/100) + (stepsi$interval %% 100) / 60.0
-plot(tod,stepsi$mean,type='l',
-     axes=FALSE,
-     main='Average Number of Steps per Interval',
-     xlab='Time',
-     ylab='Average Number of Steps'
-     )
-axis(1,at=0:24)
-axis(2)
+g <- ggplot(stepsi,aes(interval,mean)) +
+    geom_line(color='blue') +
+    theme_bw() +
+    labs(title='Average Steps per Interval') +
+    labs(x='Interval') +
+    labs(y='Number of Steps')
+print(g)
 ```
 
 ```{r}
@@ -99,9 +99,12 @@ for (i in seq(length(stepsi$interval))) {
 
 stepsd2 <- activity2 %>% group_by(date) %>% summarize(sum=sum(steps))
 
-hist(stepsd2$sum,breaks=11,
-     main='Distribution of Steps per Day\n(with inputed missing values)',
-     xlab='Steps per Day')
+g <- ggplot(stepsd2,aes(sum)) +
+    geom_histogram(binwidth=1000,color='black',fill='blue') +
+    theme_bw() +
+    labs(title='Distribution of Steps per Day\n(with inputed missing values)') +
+    labs(x='Steps per Day')
+print(g)
 ```
 
 Compute the mean number of steps per day,
@@ -130,8 +133,10 @@ activity2$workday <- ifelse(activity2$workday %in% c('Saturday','Sunday'),'weeke
 stepsi2 <- activity2 %>% group_by(interval,workday) %>% summarize(mean=mean(steps))
 
 g <- ggplot(stepsi2,aes(interval,mean)) +
-    facet_grid(workday ~ .) +
-    geom_line() +
+    facet_wrap(~workday,ncol=1) +
+    geom_line(color='blue') +
+    theme_bw() +
+    labs(title='Average Steps per Interval') +
     labs(x='Interval') +
     labs(y='Number of Steps')
 print(g)
